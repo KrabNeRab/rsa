@@ -45,6 +45,7 @@ def generate_keys():
 # Шифрование
 def encrypt(public_key, plaintext):
     e, n = public_key
+#Тут важно отметить что я ссылаюсь на таблицу Unicode при помощи функции ord(char), которая возвращает символ в числовое значение в символа в unicode
     plaintext_blocks = [ord(char) for char in plaintext]
     ciphertext_blocks = [pow(block, e, n) for block in plaintext_blocks]
     return ciphertext_blocks
