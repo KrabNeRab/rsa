@@ -1,0 +1,69 @@
+#Для наглядности, функции написал от руки, но также можно использовать модуль sympy
+import random
+
+# проверяем число на простоту
+def is_prime(num):
+    if num <= 1:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+# алогоритм Евклида для вычисления обратного элемента
+def gcd_extended(a, b):
+    if a == 0:
+        return b, 0, 1
+    gcd, x1, y1 = gcd_extended(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
+
+# находим модуль обратной
+def mod_inverse(e, phi):
+    gcd, x, _ = gcd_extended(e, phi)
+    if gcd != 1:
+        raise ValueError("Модульная обратная не существует")
+    return x % phi
+
+# тут по сути рандомно генирируем простые числа, для создания ключей rsa, но для более наглядного примера оставил такие.
+def generate_keys():
+    p = 61
+    q = 53
+    n = p * q
+    phi = (p - 1) * (q - 1)
+
+    # также рандомно генирируем e, где 1<е<phi
+    e = 17
+
+    # Вычисление d
+    d = mod_inverse(e, phi)
+    print(d)
+
+    return (e, n), (d, n)
+
+# Шифрование
+def encrypt(public_key, plaintext):
+    e, n = public_key
+    plaintext_blocks = [ord(char) for char in plaintext]
+    ciphertext_blocks = [pow(block, e, n) for block in plaintext_blocks]
+    return ciphertext_blocks
+
+# Расшифрование
+def decrypt(private_key, ciphertext):
+    d, n = private_key
+    decrypted_blocks = [pow(block, d, n) for block in ciphertext]
+    plaintext = ''.join(chr(block) for block in decrypted_blocks)
+    return plaintext
+
+# Основной процесс
+public_key, private_key = generate_keys()
+text = "Павлов Валерий Власьевич ДПИ23-1"
+
+# Шифрование
+ciphertext = encrypt(public_key, text)
+print("Зашифрованный текст:", ciphertext)
+
+# Расшифрование
+decrypted_text = decrypt(private_key, ciphertext)
+print("Расшифрованный текст:", decrypted_text)
